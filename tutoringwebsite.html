@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AK Tutoring Co.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden; /* This prevents vertical scrolling */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body.light-mode {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+        .glassy-nav {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(17, 24, 39, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        body.light-mode .glassy-nav {
+            background-color: rgba(224, 242, 254, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .content-section {
+            padding-top: 6rem; /* Reduced padding to fit better */
+            display: none; /* Hide all content sections by default */
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+        }
+        .content-section.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            max-width: 800px;
+        }
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 50%;
+            height: 4px;
+            background-color: #6366f1;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease;
+        }
+        body.light-mode .section-title::after {
+            background-color: #3b82f6;
+        }
+        .nav-link {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #9ca3af;
+        }
+        body.light-mode .nav-link:hover {
+            color: #3b82f6;
+        }
+        .section-content {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease, border 0.3s ease;
+            max-height: 80vh; /* Prevents text overflow */
+            overflow-y: auto; /* Allows scrolling within the text box if needed */
+        }
+        body.light-mode .section-content {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .section-content:hover {
+            transform: scale(1.02);
+        }
+        .resume-section .list-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        .resume-section .list-item-title {
+            font-weight: bold;
+            flex-shrink: 0;
+            min-width: 150px;
+        }
+        .contact-info a {
+            color: #9ca3af;
+            text-decoration: underline;
+        }
+        body.light-mode .contact-info a {
+            color: #1e293b;
+        }
+        .footer {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        .footer a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #3b82f6;
+        }
+        /* Modal Popup Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content-wrapper {
+            position: relative;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+        }
+        .modal-content {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        body.light-mode .modal-content {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full z-50 py-4 px-8 glassy-nav">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold nav-link" data-tab="home">AK Tutoring Co.</a>
+            <!-- Main navigation links always visible -->
+            <div class="flex space-x-8 items-center">
+                <a href="#" class="nav-link" data-tab="home">Home</a>
+                <a href="#" class="nav-link" data-tab="about">About</a>
+                <a href="#" class="nav-link" data-tab="resume">Tutor Resume</a>
+                <a href="#" class="nav-link" data-tab="pricing">Pricing</a>
+                <a href="#" class="nav-link" data-tab="contact">Contact Us</a>
+                <button id="mode-toggle" class="nav-link focus:outline-none">
+                    <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                    <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Sections -->
+    <div id="content-container" class="container mx-auto px-4 mt-16">
+
+        <!-- Home Section -->
+        <section id="home" class="content-section flex items-center justify-center text-center active">
+            <div class="section-content w-full">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Welcome to AK Tutoring Co.</h1>
+                <p class="text-lg md:text-xl text-gray-400">
+                    Every child has unique potential waiting to be unlocked. My mission is to provide personalized, one-on-one tutoring that goes beyond the standard classroom pace, helping each student build a strong foundation, strengthen school concepts, and explore new topics.
+                </p>
+            </div>
+            <footer class="footer">
+                <p>&copy; AK Tutoring LLC, All rights reserved to Aditya Kamath.</p>
+                <p><a href="#" class="terms-link">Terms and Conditions</a></p>
+            </footer>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="content-section flex items-center justify-center">
+            <div class="section-content w-full">
+                <h2 class="section-title text-gray-100">My Philosophy: Unlocking Individual Potential</h2>
+                <p class="text-lg text-gray-300">
+                    In today's classrooms, a one-size-fits-all approach can often hold students back. I believe in providing an individualized and diverse learning experience tailored to each student's personal needs. I currently offer tutoring in **Reading** and **Math**, but special inquiries can be made.
+                </p>
+                <p class="mt-4 text-lg text-gray-300">
+                    Unlike the "medium learning speed" of traditional schools, private tutoring allows for a custom pace. This one-on-one attention can significantly strengthen concepts taught in class and provide the opportunity for more learning than what is regularly taught. My goal is to empower students to reach their full potential and build a lifelong love for learning.
+                </p>
+            </div>
+            <footer class="footer">
+                <p>&copy; AK Tutoring LLC, All rights reserved to Aditya Kamath.</p>
+                <p><a href="#" class="terms-link">Terms and Conditions</a></p>
+            </footer>
+        </section>
+
+        <!-- Tutor Resume Section -->
+        <section id="resume" class="content-section flex items-center justify-center">
+            <div class="section-content w-full resume-section">
+                <h2 class="section-title text-gray-100">Tutor Resume</h2>
+                <div class="text-lg text-gray-300">
+                    <p class="font-bold text-xl mb-4">Adi Kamath</p>
+                    <p><strong>Age:</strong> 13 years old</p>
+                    <hr class="my-4 border-gray-700" />
+                    <p class="font-bold text-lg mb-2">Extracurricular Skills:</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li>Experienced piano player (classes for 5 years)</li>
+                        <li>Intermediate chess player (5 years)</li>
+                        <li>Advanced basketball player (4 years)</li>
+                        <li>Semester-long course on Engineering and Design Modeling, passed with 95/100 and certification, with proficient understanding of LdCAD, and Whitebox</li>
+                        <li>Semester-long course on Media Production, passed with a 98/100 and certification, with proficient understanding of Adobe Photoshop, Adobe After Effects, WeVideo and Capcut</li>
+                        <li>Owns a growing and successful YouTube channel with 600+ subscribers.</li>
+                    </ul>
+                    <hr class="my-4 border-gray-700" />
+                    <p class="font-bold text-lg mb-2">Academic Skills:</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li>4.0 GPA overall</li>
+                        <li>A+ Grade in Algebra, Geometry, Geology, English/Vocab, American History, Computer Science, and Chemistry (All at 8th grade or below level).</li>
+                    </ul>
+                    <hr class="my-4 border-gray-700" />
+                    <p class="font-bold text-lg mb-2">Availability:</p>
+                    <p>Free for most timings, can have some issues if colliding with personal classes.</p>
+                    <hr class="my-4 border-gray-700" />
+                    <p class="font-bold text-lg mb-2">Restrictions:</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li><strong>Age:</strong> Only able to do tutor people 13 and under</li>
+                        <li><strong>Location:</strong> Only able to do jobs in surrounding area</li>
+                        <li><strong>Language:</strong> Only proficiently speaks two languages (American English and Konkani)</li>
+                    </ul>
+                </div>
+            </div>
+            <footer class="footer">
+                <p>&copy; AK Tutoring LLC, All rights reserved to Aditya Kamath.</p>
+                <p><a href="#" class="terms-link">Terms and Conditions</a></p>
+            </footer>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="content-section flex items-center justify-center">
+            <div class="section-content w-full">
+                <h2 class="section-title text-gray-100">Pricing</h2>
+                <p class="text-lg text-gray-300">
+                    My standard tutoring rate is **$20 per hour**. The first trial lesson is always free.
+                </p>
+                <p class="mt-4 text-lg text-gray-300">
+                    However, this can be subject to change based on special circumstances, such as a student's specific needs, the complexity of the subject, or travel distance. I can discuss a custom rate during our initial consultation to ensure it works for everyone.
+                </p>
+            </div>
+            <footer class="footer">
+                <p>&copy; AK Tutoring LLC, All rights reserved to Aditya Kamath.</p>
+                <p><a href="#" class="terms-link">Terms and Conditions</a></p>
+            </footer>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact" class="content-section flex items-center justify-center">
+            <div class="section-content w-full contact-info">
+                <h2 class="section-title text-gray-100">Contact Us</h2>
+                <p class="text-lg text-gray-300">
+                    Requests for tutoring can take up to 72 hours to be responded to.
+                </p>
+                <p class="text-lg text-gray-300 mt-4">
+                    To Contact for Business Inquiries:
+                </p>
+                <div class="mt-4 text-gray-300">
+                    <p class="font-bold">Emails:</p>
+                    <ul class="list-disc list-inside pl-4">
+                        <li><a href="mailto:business.adikamath@gmail.com">business.adikamath@gmail.com</a> for business</li>
+                        <li><a href="mailto:adikamath14@outlook.com">adikamath14@outlook.com</a> (personal)</li>
+                        <li><a href="mailto:adikamath14@gmail.com">adikamath14@gmail.com</a> (personal)</li>
+                    </ul>
+                </div>
+                <div class="mt-4 text-gray-300">
+                    <p class="font-bold">Phone:</p>
+                    <ul class="list-disc list-inside pl-4">
+                        <li>+1-425-283-3244 (Personal)</li>
+                        <li>+1-408-365-4726 (Parents)</li>
+                        <li>+1-858-523-8465 (Parents)</li>
+                    </ul>
+                </div>
+            </div>
+            <footer class="footer">
+                <p>&copy; AK Tutoring LLC, All rights reserved to Aditya Kamath.</p>
+                <p><a href="#" class="terms-link">Terms and Conditions</a></p>
+            </footer>
+        </section>
+
+    </div>
+
+    <!-- The Modal Pop-up -->
+    <div id="text-modal" class="modal">
+        <div class="modal-content-wrapper">
+            <span class="close-btn">&times;</span>
+            <div id="modal-content-area" class="modal-content">
+                <!-- Content will be injected here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const sectionContents = document.querySelectorAll('.section-content');
+        const modeToggle = document.getElementById('mode-toggle');
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        const modal = document.getElementById('text-modal');
+        const modalContentArea = document.getElementById('modal-content-area');
+        const closeBtn = document.querySelector('.close-btn');
+        const termsLinks = document.querySelectorAll('.terms-link');
+        
+        // --- Tab switching logic ---
+        function showTab(tabId) {
+            contentSections.forEach(section => {
+                if (section.id === tabId) {
+                    section.classList.add('active');
+                    section.style.display = 'flex';
+                } else {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tabId = this.getAttribute('data-tab');
+                showTab(tabId);
+            });
+        });
+
+        // --- Light/Dark mode toggle ---
+        modeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            moonIcon.classList.toggle('hidden');
+            sunIcon.classList.toggle('hidden');
+        });
+
+        // --- Popup modal logic for content sections and Terms and Conditions ---
+        
+        // This is the HTML content for the Terms and Conditions
+        const termsAndConditionsContent = `
+            <h2 class="section-title text-gray-100">Terms and Conditions</h2>
+            <p class="text-lg text-gray-300 mb-4">
+                Welcome to AK Tutoring Co. By engaging my tutoring services, you agree to the following terms and conditions. These terms are designed to ensure a smooth and productive tutoring experience for all parties involved.
+            </p>
+            <p class="text-lg text-gray-300 mb-4">
+                **Tutoring Services:** I, Aditya Kamath, will provide one-on-one tutoring sessions in the subjects agreed upon during our initial consultation. While I strive to help every student reach their academic potential, I do not guarantee specific grades or outcomes. Tutoring is a collaborative process that requires active participation from the student.
+            </p>
+            <p class="text-lg text-gray-300 mb-4">
+                **Payment:** Payment for services is due within 24 hours of receiving a bill for the completed session. If payment is not received within this timeframe, a late fee of **$5** will be applied to the outstanding balance.
+            </p>
+            <p class="text-lg text-gray-300 mb-4">
+                **Cancellations:** If you need to cancel a scheduled session, please notify me at least 24 hours in advance. Cancellations made with less than 24 hours' notice may be subject to a cancellation fee equivalent to the full session rate.
+            </p>
+            <p class="text-lg text-gray-300 mb-4">
+                **Confidentiality:** All personal and academic information shared during tutoring sessions will be kept confidential. I will not share any student information with third parties without express permission from a parent or legal guardian.
+            </p>
+            <p class="text-lg text-gray-300">
+                **Liability:** I am not responsible for any personal injury or property damage that may occur during in-person tutoring sessions. By agreeing to these terms, you release me from any and all liability for such incidents.
+            </p>
+        `;
+
+        // Click handler for the content sections
+        sectionContents.forEach(content => {
+            content.addEventListener('click', function(e) {
+                // Stop the event from bubbling up and potentially triggering a parent listener
+                e.stopPropagation();
+
+                // Clone the content and remove elements we don't want in the popup
+                const clonedContent = this.cloneNode(true);
+                clonedContent.classList.remove('cursor-pointer', 'hover:scale-102');
+                clonedContent.style.transform = 'none';
+
+                const footer = clonedContent.querySelector('.footer');
+                if (footer) {
+                    footer.remove();
+                }
+
+                modalContentArea.innerHTML = ''; // Clear previous content
+                modalContentArea.appendChild(clonedContent);
+                modal.style.display = 'block';
+            });
+        });
+
+        // Click handler for the Terms and Conditions link
+        termsLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent the event from bubbling to the content section's listener
+
+                // Inject the correct T&C content into the modal
+                modalContentArea.innerHTML = termsAndConditionsContent;
+                modal.style.display = 'block';
+            });
+        });
+
+        // Close modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Close modal if user clicks outside of it
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initial tab display
+        showTab('home');
+
+    </script>
+</body>
+</html>
